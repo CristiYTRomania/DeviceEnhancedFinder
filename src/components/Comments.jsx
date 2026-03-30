@@ -5,10 +5,27 @@ export default function Comments() {
     const [score, setScore] = useState(0);
     const [comment, setComment] = useState('');
     const [list, setList] = useState([]);
+    const [voteList,setVoteList] = useState([]);
+
+    const updateVote = (index, type) => {
+    const newVotes = [...voteList];
+    let { score, active } = newVotes[index];
+    if (type === 'like') {
+      if (active === 'like') { { active = null; score -= 1; } } 
+      else { score += (active === 'dislike' ? 2 : 1); active = 'like'; }
+    } else {
+      if (active === 'dislike') { { active = null; score += 1; } } 
+      else { score -= (active === 'like' ? 2 : 1); active = 'dislike'; }
+    }
+        newVotes[index] = { score, active };
+        setVoteList(newVotes);
+    };
+    
     const handleComment = (e) => {
         e.preventDefault();
         setList([...list, comment]);
         setComment("");
+        setVoteList([...voteList, { score: 0, active: null }]);
     };
     return(
         <div>
@@ -27,23 +44,18 @@ export default function Comments() {
                     <ThumbsUp 
                         size={24}
                         cursor="pointer"
-                        color={active === 'like' ? '#3b82f6' : 'gray'} 
-                        fill={active === 'like' ? '#3b82f6' : 'none'}
-                        onClick={() => {
-                        setActive(active === 'like' ? null : 'like')
-                        setScore(active === 'dislike' ? score+2 : active === 'like' ? score-1 : score+1)
-                        }}
+                        color={voteList[index].active === 'like' ? '#3b82f6' : 'gray'} 
+                        fill ={voteList[index].active === 'like' ? '#3b82f6' : 'none'}
+                        onClick={() => updateVote(index, 'like')}
                     />
-                    <div style={{ marginLeft:'9px', marginRight:'9px', display: 'inline-block'}} className={score>=5 ? "blue" : score<=-5 ? "red" : ""}>{score}</div>
+                    <div style={{ marginLeft:'9px', marginRight:'9px', display: 'inline-block'}} className={score>=5 ? "blue" : score<=-5 ? "red" : ""}>{voteList[index]?.score}</div>
                     <ThumbsDown 
                         size={24}
                         cursor="pointer"
-                        color={active === 'dislike' ? '#ef4444' : 'gray'}
-                        fill={active === 'dislike' ? '#ef4444' : 'none'}
-                        onClick={() => {
-                        setActive(active === 'dislike' ? null : 'dislike')
-                        setScore(active === 'like' ? score-2 : active === 'dislike' ? score+1 : score-1)
-                        }}
+                        color={voteList[index].active === 'dislike' ? '#ef4444' : 'gray'}
+                        fill ={voteList[index].active === 'dislike' ? '#ef4444' : 'none'}
+                        onClick={() => updateVote(index, 'dislike')}
+
                     />
                 </div>
             ))}

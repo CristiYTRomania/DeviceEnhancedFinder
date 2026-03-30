@@ -10,7 +10,7 @@ function MyCard(props) {
       <h3 class="blue">{props.title}</h3>
       <h4>Type: {props.type}</h4>
       {
-        (props.price !== "No" && props.price !== "NaN") &&
+        (props.price !== "No" && props.price !== "NaN" && props.price !== "0") &&
         <h4 className={props.price > 4000 ? "price-tag red" : props.price > 2500 ? "price-tag orange" : props.price < 1000 ? "price-tag green" : "price-tag"}>
           Price: {props.price} RON
         </h4>
@@ -45,12 +45,12 @@ function MyCard(props) {
         <h4 className={props.mem_card_slot === "No" ? "red" : ""}>Memory card slot: {props.mem_card_slot}</h4>
       }
       {
-        (props.mem_card_slot !== "No" && props.mem_card_slot !== "NaN") && (props.card_slot_max !== "NaN") &&
+        (props.mem_card_slot !== "No" && props.mem_card_slot !== "NaN") && (props.card_slot_max !== "NaN" && props.card_slot_max !== "0") &&
         <h4 className={props.card_slot_max >= 1024 ? "green" : props.card_slot_max <= 256 ? "orange":""}>
           {props.card_slot_max < 1024 ? "Card slot max storage: "+props.card_slot_max+" GB" : "Card slot max storage: "+props.card_slot_max/1024+" TB"}
         </h4>
       }
-      {(props.power !== "NaN") && <h4>Power: {props.power} W</h4>}
+      {(props.power !== "NaN" && props.power !== "0") && <h4>Power: {props.power} W</h4>}
 
       <ThumbsUp 
         size={24}
