@@ -22,12 +22,15 @@ function MyCard(props) {
         </h4>
       }
       {
-        (props.ram !== "NaN") &&
+        (props.ram !== "NaN" && props.ram !== "0") &&
         <h4 className={props.ram < 6 ? "red" : props.ram > 12 ? "green" : props.ram < 12 ? "orange":""}>
           {props.ram < 1 ? "RAM: "+props.ram*1024+" MB" : props.ram < 1024 ? "RAM: "+props.ram+" GB" : "RAM: "+props.ram/1024+" TB"}
         </h4>
       }
+      {
+        (props.jack !== "NaN") &&
       <h4 className={props.jack === "No" ? "red" : ""}>3.5mm jack: {props.jack}</h4>
+      }
       {
         (props.battery !== "No" && props.battery !== "NaN" && props.battery !== "0") &&
         <h4 className={props.battery < 4000 ? "red" : props.battery < 5000 ? "orange" : props.battery > 6000 ? "green" : ""}>

@@ -9,6 +9,9 @@ import BatteryLimits from './BatteryLimits.jsx'
 import PriceLimits from './PriceLimits.jsx'
 import CardSlotMaxStorageLimits from './CardSlotMaxStorageLimits.jsx'
 import PowerLimits from './PowerLimits.jsx'
+import SDCardFilter from './SDCardFilter.jsx'
+import NFC_Filter from './NFC_Filter.jsx';
+import HeadphoneJackFilter from './HeadphoneJackFilter.jsx';
 import { useNavigate } from 'react-router-dom';
 function Home() {
   const [textCautat, setTextCautat] = useState("");
@@ -25,6 +28,9 @@ function Home() {
   const [CardSlotMaxStorage_maxim, setCardSlotMaxStorage_maxim] = useState(Infinity);
   const [Power_minim, setPower_minim] = useState(0);
   const [Power_maxim, setPower_maxim] = useState(Infinity);
+  const [SDCardFilterSelect, setSDCardFilterSelect] = useState("All");
+  const [NFC_FilterSelect, setNFC_FilterSelect] = useState("All");
+  const [HeadphoneJackFilterSelect, setHeadphoneJackFilterSelect] = useState("All");
   const produse = [
     { id: 1,  title: "Acer Nitro V 15 ANV15-52-79A6"    , type: "Laptop"      , price: "6000"   , storage: "1024" , ram: "32"      , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
     { id: 2,  title: "Apple iPhone 12 mini"             , type: "Smartphone"  , price: "855.55" , storage: "256"  , ram: "4"       , jack: "No" , battery: "2227", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
@@ -34,6 +40,7 @@ function Home() {
     { id: 5,  title: "Fairphone 6"                      , type: "Smartphone"  , price: "2795.04", storage: "256"  , ram: "8"       , jack: "No" , battery: "4415", nfc: "Yes", card_slot_max: "2048", mem_card_slot: "microSD", power: "0"  , },
     { id: 6,  title: "HP Elitebook Folio 9470m"         , type: "Laptop"      , price: "500"    , storage: "128"  , ram: "8"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
     { id: 7,  title: "HP ProOne 400"                    , type: "PC"          , price: "0"      , storage: "512"  , ram: "4"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
+    { id: 16, title: "Kingston DataTraveler Kyson"      , type: "Flash Drive" , price: "80"     , storage: "256"  , ram: "0"       , jack: "NaN", battery: "0",    nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
     { id: 8,  title: "MSI Katana 15 HX B14WFK-265XRO"   , type: "Laptop"      , price: "6200"   , storage: "512"  , ram: "16"      , jack: "No" , battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
     { id: 9,  title: "Nothing Phone (4a)"               , type: "Smartphone"  , price: "1980.46", storage: "256"  , ram: "12"      , jack: "No" , battery: "5080", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
     { id: 10, title: "OnePlus Nord 2 5G"                , type: "Smartphone"  , price: "909.58" , storage: "128"  , ram: "8"       , jack: "No" , battery: "4500", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
@@ -41,7 +48,6 @@ function Home() {
     { id: 12, title: "Samsung Galaxy S10e"              , type: "Smartphone"  , price: "662.23" , storage: "128"  , ram: "6"       , jack: "Yes", battery: "3100", nfc: "Yes", card_slot_max: "512" , mem_card_slot: "microSD", power: "0"  , },
     { id: 14, title: "Sony Xperia Z4 Tablet LTE"        , type: "Tablet"      , price: "2546.39", storage: "32"   , ram: "3"       , jack: "Yes", battery: "6000", nfc: "Yes", card_slot_max: "128" , mem_card_slot: "microSD", power: "0"  , },
     { id: 15, title: "SSD extern SureFire Bunker Gaming", type: "External SSD", price: "320"    , storage: "512"  , ram: "0"       , jack: "NaN", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
-    { id: 16, title: "Kingston DataTraveler Kyson"      , type: "Flash Drive" , price: "80"     , storage: "256"  , ram: "0"       , jack: "NaN", battery: "0",    nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
   ];
   const produseFiltrate = produse.filter((p) => {
       const nume_cautate = p.title.toLowerCase().includes(textCautat.toLowerCase())
@@ -64,7 +70,10 @@ function Home() {
       const minim_CardSlotMaxStorage = CardSlotMaxStorage_minim || 0;
       const maxim_CardSlotMaxStorage = CardSlotMaxStorage_maxim || Infinity;
       const CardSlotMaxStorage = Number(p.card_slot_max) >= minim_CardSlotMaxStorage && Number(p.card_slot_max) <= maxim_CardSlotMaxStorage
-      return nume_cautate && tip_filtrat && memorie_interna && memorie_ram && baterie && pret && Power && CardSlotMaxStorage
+      const SDCardFilterConst = SDCardFilterSelect === "All" || p.mem_card_slot.toLowerCase() === SDCardFilterSelect.toLowerCase()
+      const NFC_FilterSelectConst = NFC_FilterSelect === "All" || p.nfc.toLowerCase() === NFC_FilterSelect.toLowerCase()
+      const HeadphoneJackFilterSelectConst = HeadphoneJackFilterSelect === "All" || p.jack.toLowerCase() === HeadphoneJackFilterSelect.toLowerCase()
+      return nume_cautate && tip_filtrat && memorie_interna && memorie_ram && baterie && pret && Power && CardSlotMaxStorage && SDCardFilterConst && NFC_FilterSelectConst && HeadphoneJackFilterSelectConst
     }
   );
   const navigate = useNavigate();
@@ -77,6 +86,9 @@ function Home() {
       <button type="logout" onClick={handleLogOut}>Logout</button>
       <h1>Device enhanced finder</h1>
       <TypeFilter onSelect={(tip_filtrat) => setTipCautat(tip_filtrat)} />
+      <SDCardFilter OnSDCardFilter={(SDCardFilterConst) => setSDCardFilterSelect(SDCardFilterConst)} />
+      <NFC_Filter OnNFC_Filter={(NFC_FilterSelectConst) => setNFC_FilterSelect(NFC_FilterSelectConst)} />
+      <HeadphoneJackFilter OnHeadphoneJackFilter={(HeadphoneJackFilterSelectConst) => setHeadphoneJackFilterSelect(HeadphoneJackFilterSelectConst)} />
       <SearchBar  candSeSchimba={(valoare) => setTextCautat(valoare)} />
       <StorageLimits OnMinStorageChange={(valoare) => setmemorie_interna_minima(valoare)} OnMaxStorageChange={(valoare) => setmemorie_interna_maxima(valoare)}/>
       <RamLimits OnMinRamChange={(valoare) => setmemorie_ram_minima(valoare)} OnMaxRamChange={(valoare) => setmemorie_ram_maxima(valoare)}/>

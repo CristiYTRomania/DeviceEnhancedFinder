@@ -1,6 +1,6 @@
 function TypeFilter(props) {
   const type = ["Smartphone", "Laptop", "Tablet", "External SSD", "Flash Drive", "Smartwatch", "PC", "All"]
-  return (
+  return (<> Product type
     <div style={{ marginBottom: '20px', textAlign: 'center' }}>
       {
         type.map((type_)=>(
@@ -9,7 +9,7 @@ function TypeFilter(props) {
             </button>
         ))
       }
-    </div>
+    </div> </>
   );
 }
 
