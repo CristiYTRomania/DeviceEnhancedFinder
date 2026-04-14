@@ -1,7 +1,7 @@
 function RamLimits(props){
     return (
         <div>
-            Memorie RAM în GB: De la 
+            RAM memory in GB: From 
             <input
                 type="number"
                 placeholder="Minimum"
@@ -17,7 +17,7 @@ function RamLimits(props){
                 marginRight: '5px',
                 }}
             />
-            până la 
+            to 
             <input
                 type="number"
                 placeholder="Maximum"

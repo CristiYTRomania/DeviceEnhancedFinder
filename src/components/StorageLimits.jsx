@@ -1,7 +1,7 @@
 function StorageLimits(props){
     return (
         <div>
-            Stocare în GB: De la 
+            Storage in GB: From 
             <input
                 type="number"
                 placeholder="Minimum"
@@ -17,7 +17,7 @@ function StorageLimits(props){
                 marginRight: '5px',
                 }}
             />
-            până la 
+            to 
             <input
                 type="number"
                 placeholder="Maximum"

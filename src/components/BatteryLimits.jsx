@@ -1,7 +1,7 @@
 function BatteryLimits(props){
     return (
         <div>
-            Baterie in mAh: De la 
+            Battery in mAh: From 
             <input
                 type="number"
                 placeholder="Minimum"
@@ -17,7 +17,7 @@ function BatteryLimits(props){
                 marginRight: '5px',
                 }}
             />
-            până la 
+            to 
             <input
                 type="number"
                 placeholder="Maximum"

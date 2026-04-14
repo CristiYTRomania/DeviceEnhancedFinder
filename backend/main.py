@@ -6,6 +6,9 @@ from routes import products
 app = FastAPI()
 app.include_router(products.router)
 
+from database.connection import engine, Base
+Base.metadata.create_all(bind=engine)
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173", "http://localhost:3000", ],

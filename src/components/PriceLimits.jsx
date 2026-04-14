@@ -1,7 +1,7 @@
 function PriceLimits(props){
     return (
         <div>
-            Prețul în RON: De la 
+            Price in RON: From 
             <input
                 type="number"
                 placeholder="Minimum"
@@ -17,7 +17,7 @@ function PriceLimits(props){
                 marginRight: '5px',
                 }}
             />
-            până la 
+            to 
             <input
                 type="number"
                 placeholder="Maximum"
