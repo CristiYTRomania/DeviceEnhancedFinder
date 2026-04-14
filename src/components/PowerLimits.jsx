@@ -1,7 +1,7 @@
 function PowerLimits(props){
     return (
         <div>
-            Puterea PC-ului în W: De la 
+            PC power in W: From 
             <input
                 type="number"
                 placeholder="Minimum"
@@ -17,7 +17,7 @@ function PowerLimits(props){
                 marginRight: '5px',
                 }}
             />
-            până la 
+            to 
             <input
                 type="number"
                 placeholder="Maximum"

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../App.css'
 import MyCard from './MyCard.jsx'
 import SearchBar from './SearchBar';
@@ -13,6 +13,21 @@ import SDCardFilter from './SDCardFilter.jsx'
 import NFC_Filter from './NFC_Filter.jsx';
 import HeadphoneJackFilter from './HeadphoneJackFilter.jsx';
 import { useNavigate } from 'react-router-dom';
+
+const API_URL = 'http://localhost:8000';
+export async function getAllProducts() {
+  try {
+    const response = await fetch(`${API_URL}/products/`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch products');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+}
+
 function Home() {
   const [textCautat, setTextCautat] = useState("");
   const [tipCautat, setTipCautat] = useState("All");
@@ -31,24 +46,47 @@ function Home() {
   const [SDCardFilterSelect, setSDCardFilterSelect] = useState("All");
   const [NFC_FilterSelect, setNFC_FilterSelect] = useState("All");
   const [HeadphoneJackFilterSelect, setHeadphoneJackFilterSelect] = useState("All");
-  const produse = [
-    { id: 1,  title: "Acer Nitro V 15 ANV15-52-79A6"    , type: "Laptop"      , price: "6000"   , storage: "1024" , ram: "32"      , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
-    { id: 2,  title: "Apple iPhone 12 mini"             , type: "Smartphone"  , price: "855.55" , storage: "256"  , ram: "4"       , jack: "No" , battery: "2227", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
-    { id: 3,  title: "Asus V440VAK-BPC0170"             , type: "PC"          , price: "2800"   , storage: "512"  , ram: "16"      , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "No"     , power: "120", },
-    { id: 4,  title: "Asus Vivobook 15 X540UBR"         , type: "Laptop"      , price: "963.73" , storage: "256"  , ram: "8"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "256" , mem_card_slot: "microSD", power: "0"  , },
-    { id: 13, title: "E-Boda Smart Time 100"            , type: "Smartwatch"  , price: "59.89"  , storage: "0"    , ram: "0.03125" , jack: "No" , battery: "230" , nfc: "No" , card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
-    { id: 5,  title: "Fairphone 6"                      , type: "Smartphone"  , price: "2795.04", storage: "256"  , ram: "8"       , jack: "No" , battery: "4415", nfc: "Yes", card_slot_max: "2048", mem_card_slot: "microSD", power: "0"  , },
-    { id: 6,  title: "HP Elitebook Folio 9470m"         , type: "Laptop"      , price: "500"    , storage: "128"  , ram: "8"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
-    { id: 7,  title: "HP ProOne 400"                    , type: "PC"          , price: "0"      , storage: "512"  , ram: "4"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
-    { id: 16, title: "Kingston DataTraveler Kyson"      , type: "Flash Drive" , price: "80"     , storage: "256"  , ram: "0"       , jack: "NaN", battery: "0",    nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
-    { id: 8,  title: "MSI Katana 15 HX B14WFK-265XRO"   , type: "Laptop"      , price: "6200"   , storage: "512"  , ram: "16"      , jack: "No" , battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
-    { id: 9,  title: "Nothing Phone (4a)"               , type: "Smartphone"  , price: "1980.46", storage: "256"  , ram: "12"      , jack: "No" , battery: "5080", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
-    { id: 10, title: "OnePlus Nord 2 5G"                , type: "Smartphone"  , price: "909.58" , storage: "128"  , ram: "8"       , jack: "No" , battery: "4500", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
-    { id: 11, title: "Samsung Galaxy A15 4G"            , type: "Smartphone"  , price: "639"    , storage: "128"  , ram: "4"       , jack: "Yes", battery: "5000", nfc: "Yes", card_slot_max: "1024", mem_card_slot: "microSD", power: "0"  , },
-    { id: 12, title: "Samsung Galaxy S10e"              , type: "Smartphone"  , price: "662.23" , storage: "128"  , ram: "6"       , jack: "Yes", battery: "3100", nfc: "Yes", card_slot_max: "512" , mem_card_slot: "microSD", power: "0"  , },
-    { id: 14, title: "Sony Xperia Z4 Tablet LTE"        , type: "Tablet"      , price: "2546.39", storage: "32"   , ram: "3"       , jack: "Yes", battery: "6000", nfc: "Yes", card_slot_max: "128" , mem_card_slot: "microSD", power: "0"  , },
-    { id: 15, title: "SSD extern SureFire Bunker Gaming", type: "External SSD", price: "320"    , storage: "512"  , ram: "0"       , jack: "NaN", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
-  ];
+
+  const [produse, setProduse] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setLoading(true);
+        const products = await getAllProducts();
+        setProduse(products);
+        setError(null);
+      } catch (err) {
+        setError('Nu s-au putut încărca produsele');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+ 
+    fetchProducts();
+  }, []); 
+
+  // const produse = [
+  //   { id: 1,  title: "Acer Nitro V 15 ANV15-52-79A6"    , type: "Laptop"      , price: "6000"   , storage: "1024" , ram: "32"      , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
+  //   { id: 2,  title: "Apple iPhone 12 mini"             , type: "Smartphone"  , price: "855.55" , storage: "256"  , ram: "4"       , jack: "No" , battery: "2227", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
+  //   { id: 3,  title: "Asus V440VAK-BPC0170"             , type: "PC"          , price: "2800"   , storage: "512"  , ram: "16"      , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "No"     , power: "120", },
+  //   { id: 4,  title: "Asus Vivobook 15 X540UBR"         , type: "Laptop"      , price: "963.73" , storage: "256"  , ram: "8"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "256" , mem_card_slot: "microSD", power: "0"  , },
+  //   { id: 13, title: "E-Boda Smart Time 100"            , type: "Smartwatch"  , price: "59.89"  , storage: "0"    , ram: "0.03125" , jack: "No" , battery: "230" , nfc: "No" , card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
+  //   { id: 5,  title: "Fairphone 6"                      , type: "Smartphone"  , price: "2795.04", storage: "256"  , ram: "8"       , jack: "No" , battery: "4415", nfc: "Yes", card_slot_max: "2048", mem_card_slot: "microSD", power: "0"  , },
+  //   { id: 6,  title: "HP Elitebook Folio 9470m"         , type: "Laptop"      , price: "500"    , storage: "128"  , ram: "8"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
+  //   { id: 7,  title: "HP ProOne 400"                    , type: "PC"          , price: "0"      , storage: "512"  , ram: "4"       , jack: "Yes", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "SD"     , power: "0"  , },
+  //   { id: 16, title: "Kingston DataTraveler Kyson"      , type: "Flash Drive" , price: "80"     , storage: "256"  , ram: "0"       , jack: "NaN", battery: "0",    nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
+  //   { id: 8,  title: "MSI Katana 15 HX B14WFK-265XRO"   , type: "Laptop"      , price: "6200"   , storage: "512"  , ram: "16"      , jack: "No" , battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN"    , power: "0"  , },
+  //   { id: 9,  title: "Nothing Phone (4a)"               , type: "Smartphone"  , price: "1980.46", storage: "256"  , ram: "12"      , jack: "No" , battery: "5080", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
+  //   { id: 10, title: "OnePlus Nord 2 5G"                , type: "Smartphone"  , price: "909.58" , storage: "128"  , ram: "8"       , jack: "No" , battery: "4500", nfc: "Yes", card_slot_max: "0"   , mem_card_slot: "No"     , power: "0"  , },
+  //   { id: 11, title: "Samsung Galaxy A15 4G"            , type: "Smartphone"  , price: "639"    , storage: "128"  , ram: "4"       , jack: "Yes", battery: "5000", nfc: "Yes", card_slot_max: "1024", mem_card_slot: "microSD", power: "0"  , },
+  //   { id: 12, title: "Samsung Galaxy S10e"              , type: "Smartphone"  , price: "662.23" , storage: "128"  , ram: "6"       , jack: "Yes", battery: "3100", nfc: "Yes", card_slot_max: "512" , mem_card_slot: "microSD", power: "0"  , },
+  //   { id: 14, title: "Sony Xperia Z4 Tablet LTE"        , type: "Tablet"      , price: "2546.39", storage: "32"   , ram: "3"       , jack: "Yes", battery: "6000", nfc: "Yes", card_slot_max: "128" , mem_card_slot: "microSD", power: "0"  , },
+  //   { id: 15, title: "SSD extern SureFire Bunker Gaming", type: "External SSD", price: "320"    , storage: "512"  , ram: "0"       , jack: "NaN", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
+  // ];
   const produseFiltrate = produse.filter((p) => {
       const nume_cautate = p.title.toLowerCase().includes(textCautat.toLowerCase())
       const tip_filtrat  = tipCautat === "All" || p.type.toLowerCase() === tipCautat.toLowerCase()
