@@ -122,21 +122,21 @@ function Home() {
   const clearAll = (e) => {
     setTextCautat("");
     setTipCautat("All");
-    setmemorie_interna_minima = useState(0);
-    setmemorie_interna_maxima = useState(Infinity);
-    setmemorie_ram_minima = useState(0);
-    setmemorie_ram_maxima = useState(Infinity);
-    setbaterie_minima = useState(0);
-    setbaterie_maxima = useState(Infinity);
-    setpret_minim = useState(0);
-    setpret_maxim = useState(Infinity);
-    setCardSlotMaxStorage_minim = useState(0);
-    setCardSlotMaxStorage_maxim = useState(Infinity);
-    setPower_minim = useState(0);
-    setPower_maxim = useState(Infinity);
-    setSDCardFilterSelect = useState("All");
-    setNFC_FilterSelect = useState("All");
-    setHeadphoneJackFilterSelect = useState("All");
+    setmemorie_interna_minima(0);
+    setmemorie_interna_maxima(Infinity);
+    setmemorie_ram_minima(0);
+    setmemorie_ram_maxima(Infinity);
+    setbaterie_minima(0);
+    setbaterie_maxima(Infinity);
+    setpret_minim(0);
+    setpret_maxim(Infinity);
+    setCardSlotMaxStorage_minim(0);
+    setCardSlotMaxStorage_maxim(Infinity);
+    setPower_minim(0);
+    setPower_maxim(Infinity);
+    setSDCardFilterSelect("All");
+    setNFC_FilterSelect("All");
+    setHeadphoneJackFilterSelect("All");
   }
   return(
     <>
