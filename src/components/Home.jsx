@@ -87,7 +87,7 @@ function Home() {
     { id: 14, title: "Sony Xperia Z4 Tablet LTE"        , type: "Tablet"      , price: "2546.39", storage: "32"   , ram: "3"       , jack: "Yes", battery: "6000", nfc: "Yes", card_slot_max: "128" , mem_card_slot: "microSD", power: "0"  , },
     { id: 15, title: "SSD extern SureFire Bunker Gaming", type: "External SSD", price: "320"    , storage: "512"  , ram: "0"       , jack: "NaN", battery: "0"   , nfc: "NaN", card_slot_max: "0"   , mem_card_slot: "NaN",     power: "0"  , },
   ];
-  const produseFiltrate = produse.filter((p) => {
+  const produseFiltrate = listaProduse.filter((p) => {
       const nume_cautate = p.title.toLowerCase().includes(textCautat.toLowerCase())
       const tip_filtrat  = tipCautat === "All" || p.type.toLowerCase() === tipCautat.toLowerCase()
       const minim = memorie_interna_minima || 0;
@@ -119,6 +119,25 @@ function Home() {
     e.preventDefault();
     navigate('/login');
   };
+  const clearAll = (e) => {
+    setTextCautat("");
+    setTipCautat("All");
+    setmemorie_interna_minima = useState(0);
+    setmemorie_interna_maxima = useState(Infinity);
+    setmemorie_ram_minima = useState(0);
+    setmemorie_ram_maxima = useState(Infinity);
+    setbaterie_minima = useState(0);
+    setbaterie_maxima = useState(Infinity);
+    setpret_minim = useState(0);
+    setpret_maxim = useState(Infinity);
+    setCardSlotMaxStorage_minim = useState(0);
+    setCardSlotMaxStorage_maxim = useState(Infinity);
+    setPower_minim = useState(0);
+    setPower_maxim = useState(Infinity);
+    setSDCardFilterSelect = useState("All");
+    setNFC_FilterSelect = useState("All");
+    setHeadphoneJackFilterSelect = useState("All");
+  }
   return(
     <>
       <button type="logout" onClick={handleLogOut}>Logout</button>
@@ -127,6 +146,7 @@ function Home() {
       <SDCardFilter OnSDCardFilter={(SDCardFilterConst) => setSDCardFilterSelect(SDCardFilterConst)} />
       <NFC_Filter OnNFC_Filter={(NFC_FilterSelectConst) => setNFC_FilterSelect(NFC_FilterSelectConst)} />
       <HeadphoneJackFilter OnHeadphoneJackFilter={(HeadphoneJackFilterSelectConst) => setHeadphoneJackFilterSelect(HeadphoneJackFilterSelectConst)} />
+      <button type="clearAll" onClick={clearAll}>Clear all filters</button><h1 />
       <SearchBar  candSeSchimba={(valoare) => setTextCautat(valoare)} />
       <StorageLimits OnMinStorageChange={(valoare) => setmemorie_interna_minima(valoare)} OnMaxStorageChange={(valoare) => setmemorie_interna_maxima(valoare)}/>
       <RamLimits OnMinRamChange={(valoare) => setmemorie_ram_minima(valoare)} OnMaxRamChange={(valoare) => setmemorie_ram_maxima(valoare)}/>
