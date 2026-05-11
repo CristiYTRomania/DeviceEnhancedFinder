@@ -1,65 +1,87 @@
-import { useState } from 'react';
-import { ThumbsUp, ThumbsDown } from 'lucide-react';
-export default function Comments() {
-    const [active, setActive] = useState(null);
-    const [score, setScore] = useState(0);
-    const [comment, setComment] = useState('');
-    const [list, setList] = useState([]);
-    const [voteList,setVoteList] = useState([]);
-
-    const updateVote = (index, type) => {
-    const newVotes = [...voteList];
-    let { score, active } = newVotes[index];
-    if (type === 'like') {
-      if (active === 'like') { { active = null; score -= 1; } } 
-      else { score += (active === 'dislike' ? 2 : 1); active = 'like'; }
-    } else {
-      if (active === 'dislike') { { active = null; score += 1; } } 
-      else { score -= (active === 'like' ? 2 : 1); active = 'dislike'; }
+import { useState, useEffect } from 'react';
+ 
+const API_URL = 'http://localhost:8000';
+ 
+async function addComment(productId, content, token) {
+  const response = await fetch(`${API_URL}/interactions/comment`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ product_id: productId, content }),
+  });
+  return response.json();
+}
+ 
+async function getProductComments(productId) {
+  const response = await fetch(`${API_URL}/interactions/comments/${productId}`);
+  return response.json();
+}
+ 
+export default function Comments({ productId, isLoggedIn }) {
+  const [comment, setComment] = useState('');
+  const [comments, setComments] = useState([]);
+  const [username, setUsername] = useState('');
+ 
+  useEffect(() => {
+    loadComments();
+    const storedUsername = localStorage.getItem('username');
+    if (storedUsername) {
+      setUsername(storedUsername);
     }
-        newVotes[index] = { score, active };
-        setVoteList(newVotes);
-    };
-    
-    const handleComment = (e) => {
-        e.preventDefault();
-        setList([...list, comment]);
-        setComment("");
-        setVoteList([...voteList, { score: 0, active: null }]);
-    };
-    return(
-        <div>
-            <form onSubmit={handleComment} style={{ padding: '20px' }}>
-                <h2>Comment</h2>
-                <input type="comment" onChange={(e) => setComment(e.target.value)} placeholder="Comment" value={comment} style={{backgroundColor: "white", color: "black"}}/>
-                <br /><br />
-                <button type="submit">Comment</button>
-            </form>
-            {list.map((c, index)=> (
-                <div style={{backgroundColor: "white"}}>
-                    Cristi56: {c} <span />
-                    <button type="delete" onClick={(e) => setList(list.filter((_, i) => i !== index))} placeholder="Delete">
-                        Delete
-                    </button>
-                    <ThumbsUp 
-                        size={24}
-                        cursor="pointer"
-                        color={voteList[index].active === 'like' ? '#3b82f6' : 'gray'} 
-                        fill ={voteList[index].active === 'like' ? '#3b82f6' : 'none'}
-                        onClick={() => updateVote(index, 'like')}
-                    />
-                    <div style={{ marginLeft:'9px', marginRight:'9px', display: 'inline-block'}} className={score>=5 ? "blue" : score<=-5 ? "red" : ""}>{voteList[index]?.score}</div>
-                    <ThumbsDown 
-                        size={24}
-                        cursor="pointer"
-                        color={voteList[index].active === 'dislike' ? '#ef4444' : 'gray'}
-                        fill ={voteList[index].active === 'dislike' ? '#ef4444' : 'none'}
-                        onClick={() => updateVote(index, 'dislike')}
-
-                    />
-                </div>
-            ))}
-        </div>
-    )
-  
+  }, [productId]);
+ 
+  const loadComments = async () => {
+    try {
+      const data = await getProductComments(productId);
+      setComments(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to load comments:', error);
+      setComments([]);
+    }
+  };
+ 
+  const handleComment = async (e) => {
+    e.preventDefault();
+    if (!isLoggedIn || !comment.trim()) return;
+ 
+    const token = localStorage.getItem('token');
+    try {
+      await addComment(productId, comment, token);
+      setComment('');
+      loadComments();
+    } catch (error) {
+      console.error('Failed to add comment:', error);
+    }
+  };
+ 
+  return(
+    <div>
+      {isLoggedIn && (
+        <form onSubmit={handleComment} style={{ padding: '20px' }}>
+          <h2>Comment</h2>
+          <input 
+            type="text" 
+            onChange={(e) => setComment(e.target.value)} 
+            placeholder="Comment" 
+            value={comment} 
+            style={{backgroundColor: "white", color: "black", width: "300px"}}
+          />
+          <br /><br />
+          <button type="submit">Comment</button>
+        </form>
+      )}
+      <div style={{ marginTop: '20px' }}>
+        {comments.map((c) => (
+          <div key={c.id} style={{backgroundColor: "white", padding: "10px", marginBottom: "10px", borderRadius: "5px"}}>
+            <strong>User {c.user_id}:</strong> {c.content}
+            <div style={{ fontSize: "12px", color: "gray" }}>
+              {new Date(c.created_at).toLocaleString()}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
