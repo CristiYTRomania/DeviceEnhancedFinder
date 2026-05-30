@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Text, Boolean
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from .connection import Base
@@ -13,6 +13,7 @@ class User(Base):
  
     likes = relationship("Like", back_populates="user", cascade="all, delete-orphan")
     comments = relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+    comment_reactions = relationship("CommentReaction", back_populates="user", cascade="all, delete-orphan")
  
 class Product(Base):
  
@@ -41,6 +42,7 @@ class Like(Base):
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     product_id = Column(Integer, ForeignKey("products.id"), nullable=False)
+    is_like = Column(Boolean, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
  
     user = relationship("User", back_populates="likes")
@@ -57,3 +59,20 @@ class Comment(Base):
  
     user = relationship("User", back_populates="comments")
     product = relationship("Product", back_populates="comments")
+    reactions = relationship("CommentReaction", back_populates="comment", cascade="all, delete-orphan")
+ 
+    @property
+    def username(self):
+        return self.user.username if self.user else None
+ 
+class CommentReaction(Base):
+    __tablename__ = "comment_reactions"
+ 
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    comment_id = Column(Integer, ForeignKey("comments.id"), nullable=False)
+    is_like = Column(Boolean, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+ 
+    user = relationship("User", back_populates="comment_reactions")
+    comment = relationship("Comment", back_populates="reactions")

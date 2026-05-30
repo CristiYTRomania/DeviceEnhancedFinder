@@ -13,7 +13,7 @@ import SDCardFilter from './SDCardFilter.jsx'
 import NFC_Filter from './NFC_Filter.jsx';
 import HeadphoneJackFilter from './HeadphoneJackFilter.jsx';
 import { useNavigate } from 'react-router-dom';
-
+ 
 const API_URL = 'http://localhost:8000';
 export async function getAllProducts() {
   try {
@@ -27,7 +27,7 @@ export async function getAllProducts() {
     return [];
   }
 }
-
+ 
 function Home() {
   const [textCautat, setTextCautat] = useState("");
   const [tipCautat, setTipCautat] = useState("All");
@@ -46,12 +46,14 @@ function Home() {
   const [SDCardFilterSelect, setSDCardFilterSelect] = useState("All");
   const [NFC_FilterSelect, setNFC_FilterSelect] = useState("All");
   const [HeadphoneJackFilterSelect, setHeadphoneJackFilterSelect] = useState("All");
-
+ 
   const [produse, setProduse] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+ 
   useEffect(() => {
+    setIsLoggedIn(localStorage.getItem('auth') === 'true');
     async function fetchProducts() {
       try {
         setLoading(true);
@@ -68,7 +70,7 @@ function Home() {
  
     fetchProducts();
   }, []); 
-
+ 
   const produseFiltrate = produse.filter((p) => {
       const nume_cautate = p.title.toLowerCase().includes(textCautat.toLowerCase())
       const tip_filtrat  = tipCautat === "All" || p.type.toLowerCase() === tipCautat.toLowerCase()
@@ -99,11 +101,36 @@ function Home() {
   const navigate = useNavigate();
   const handleLogOut = (e) => {
     e.preventDefault();
+    localStorage.clear();
+    setIsLoggedIn(false);
     navigate('/login');
   };
   const handleSignUp = (e) => {
     e.preventDefault();
     navigate('/signup');
+  };
+  const handleDeleteAccount = async () => {
+    if (!window.confirm("Are you sure you want to delete your account? This action is permanent!")) return;
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`${API_URL}/auth/delete`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (response.ok) {
+        localStorage.clear();
+        setIsLoggedIn(false);
+        alert("Account successfully deleted!");
+        navigate('/login');
+      } else {
+        alert("Failed to delete account.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting account.");
+    }
   };
   const clearAll = (e) => {
     setTextCautat("");
@@ -126,8 +153,21 @@ function Home() {
   }
   return(
     <>
-      <button type="logout" onClick={handleLogOut}>Logout</button>
-      <button type="signup" onClick={handleSignUp}>Sign Up</button>
+      <div style={{ padding: '10px 0', textAlign: 'right' }}>
+        {isLoggedIn ? (
+          <>
+            <button type="logout" onClick={handleLogOut} style={{ marginRight: '10px' }}>Logout</button>
+            <button onClick={handleDeleteAccount} style={{ backgroundColor: '#ef4444', color: 'white', border: 'none', padding: '6px 12px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Delete Account
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => navigate('/login')} style={{ marginRight: '10px' }}>Login</button>
+            <button type="signup" onClick={handleSignUp}>Sign Up</button>
+          </>
+        )}
+      </div>
       <h1>Enhanced device finder</h1>
       <TypeFilter onSelect={(tip_filtrat) => setTipCautat(tip_filtrat)} />
       <SDCardFilter OnSDCardFilter={(SDCardFilterConst) => setSDCardFilterSelect(SDCardFilterConst)} />

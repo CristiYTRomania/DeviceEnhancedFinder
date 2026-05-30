@@ -4,39 +4,16 @@ import { ThumbsUp, ThumbsDown } from 'lucide-react';
 import Comments from "./Comments";
  
 const API_URL = 'http://localhost:8000';
-
-async function likeProduct(productId, token) {
-  const response = await fetch(`${API_URL}/interactions/like`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`,
-    },
-    body: JSON.stringify({ product_id: productId }),
-  });
-  return response.json();
-}
  
-async function unlikeProduct(productId, token) {
-  await fetch(`${API_URL}/interactions/like/${productId}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  });
-}
- 
-async function getProductLikes(productId) {
+async function getProductReactions(productId) {
   const response = await fetch(`${API_URL}/interactions/likes/${productId}`);
   return response.json();
 }
  
 function MyCard(props) {
-  const [active, setActive] = useState(null);
-  const [score, setScore] = useState(0);
-  const [isLiked, setIsLiked] = useState(false);
-  const [isDisliked, setIsDisliked] = useState(false);
-  const [likeCount, setLikeCount] = useState(0);
+  const [likesCount, setLikesCount] = useState(0);
+  const [dislikesCount, setDislikesCount] = useState(0);
+  const [myReaction, setMyReaction] = useState(null); // 'like', 'dislike', or null
   const [isLoggedIn, setIsLoggedIn] = useState(false);
  
   useEffect(() => {
@@ -45,12 +22,28 @@ function MyCard(props) {
   }, [props.id]);
  
   const loadLikes = async () => {
-    const likes = await getProductLikes(props.id);
-    setLikeCount(likes.length);
-    const token = localStorage.getItem('token');
-    if (token) {
-      const userLikes = likes.filter(like => like.user_id === getCurrentUserId(token));
-      setIsLiked(userLikes.length > 0);
+    try {
+      const data = await getProductReactions(props.id);
+      const list = Array.isArray(data) ? data : [];
+      setLikesCount(list.filter(r => r.is_like).length);
+      setDislikesCount(list.filter(r => !r.is_like).length);
+ 
+      const token = localStorage.getItem('token');
+      if (token) {
+        const myId = getCurrentUserId(token);
+        const userReaction = list.find(r => r.user_id === myId);
+        if (userReaction) {
+          setMyReaction(userReaction.is_like ? 'like' : 'dislike');
+        } else {
+          setMyReaction(null);
+        }
+      } else {
+        setMyReaction(null);
+      }
+    } catch {
+      setLikesCount(0);
+      setDislikesCount(0);
+      setMyReaction(null);
     }
   };
  
@@ -63,23 +56,28 @@ function MyCard(props) {
     }
   };
  
-  const handleLike = async () => {
+  const handleReact = async (isLike) => {
     if (!isLoggedIn) return;
     const token = localStorage.getItem('token');
-    if (isLiked) {
-      await unlikeProduct(props.id, token);
-      setIsLiked(false);
-      setLikeCount(likeCount - 1);
-    } else {
-      await likeProduct(props.id, token);
-      setIsLiked(true);
-      setLikeCount(likeCount + 1);
+    if (!token) return;
+    try {
+      await fetch(`${API_URL}/interactions/product/${props.id}/react`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ is_like: isLike })
+      });
+      loadLikes();
+    } catch (err) {
+      console.error(err);
     }
   };
  
   return (
     <div className="card">
-      <h3 class="blue">{props.title}</h3>
+      <h3 className="blue">{props.title}</h3>
       <h4>Type: {props.type}</h4>
       {
         (props.price !== "No" && props.price !== "NaN" && props.price !== "0") &&
@@ -127,44 +125,31 @@ function MyCard(props) {
       }
       {(props.power !== "NaN" && props.power !== "0") && <h4>Power: {props.power} W</h4>}
  
-      {isLoggedIn ? (
-        <>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '15px', justifyContent: 'center', margin: '15px 0' }}>
+        <span 
+          onClick={() => handleReact(true)} 
+          style={{ cursor: isLoggedIn ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '5px' }}
+        >
           <ThumbsUp 
-            size={24}
-            cursor="pointer"
-            color={active === 'like' ? '#3b82f6' : 'gray'} 
-            fill={active === 'like' ? '#3b82f6' : 'none'}
-            onClick={() => {
-              setActive(active === 'like' ? null : 'like')
-              setScore(active === 'dislike' ? score+2 : active === 'like' ? score-1 : score+1)
-            }}
+            size={20}
+            color={myReaction === 'like' ? '#3b82f6' : 'gray'} 
+            fill={myReaction === 'like' ? '#3b82f6' : 'none'}
           />
-          <div style={{ marginLeft:'9px', marginRight:'9px', display: 'inline-block'}} className={score>=5 ? "blue" : score<=-5 ? "red" : ""}>{score}</div>
+          {likesCount}
+        </span>
+        <span 
+          onClick={() => handleReact(false)} 
+          style={{ cursor: isLoggedIn ? 'pointer' : 'default', display: 'flex', alignItems: 'center', gap: '5px' }}
+        >
           <ThumbsDown 
-            size={24}
-            cursor="pointer"
-            color={active === 'dislike' ? '#ef4444' : 'gray'}
-            fill={active === 'dislike' ? '#ef4444' : 'none'}
-            onClick={() => {
-              setActive(active === 'dislike' ? null : 'dislike')
-              setScore(active === 'like' ? score-2 : active === 'dislike' ? score+1 : score-1)
-            }}
+            size={20}
+            color={myReaction === 'dislike' ? '#ef4444' : 'gray'} 
+            fill={myReaction === 'dislike' ? '#ef4444' : 'none'}
           />
-        </>
-      ) : (
-        <>
-          <ThumbsUp 
-            size={24}
-            color="gray"
-          />
-          <div style={{ marginLeft:'9px', marginRight:'9px', display: 'inline-block'}}>{likeCount}</div>
-          <ThumbsDown 
-            size={24}
-            color="gray"
-          />
-        </>
-      )}
-      <br /><br />
+          {dislikesCount}
+        </span>
+      </div>
+      <br />
       <Comments productId={props.id} isLoggedIn={isLoggedIn} />
     </div>
   );

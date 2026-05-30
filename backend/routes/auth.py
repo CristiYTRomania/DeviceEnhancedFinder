@@ -61,3 +61,11 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
         data={"sub": db_user.username, "user_id": db_user.id}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
+ 
+from auth_dependencies import get_current_user
+ 
+@router.delete("/delete", status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    db.delete(current_user)
+    db.commit()
+    return None

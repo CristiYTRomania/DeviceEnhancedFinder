@@ -1,3 +1,5 @@
+[
+  
 {
     "title": "Acer Nitro V 15 ANV15-52-79A6",
     "type": "Laptop",
@@ -38,3 +40,5 @@
 { "title": "Samsung Galaxy S10e"              , "type": "Smartphone"  , "price": "662.23" , "storage": "128"  , "ram": "6"       , "jack": "Yes", "battery": "3100", "nfc": "Yes", "card_slot_max": "512" , "mem_card_slot": "microSD", "power": "0"  },
 { "title": "Sony Xperia Z4 Tablet LTE"        , "type": "Tablet"      , "price": "2546.39", "storage": "32"   , "ram": "3"       , "jack": "Yes", "battery": "6000", "nfc": "Yes", "card_slot_max": "128" , "mem_card_slot": "microSD", "power": "0"  },
 { "title": "SSD extern SureFire Bunker Gaming", "type": "External SSD", "price": "320"    , "storage": "512"  , "ram": "0"       , "jack": "NaN", "battery": "0"   , "nfc": "NaN", "card_slot_max": "0"   , "mem_card_slot": "NaN",     "power": "0"  }
+
+]
