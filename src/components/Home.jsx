@@ -128,7 +128,7 @@ function Home() {
     <>
       <button type="logout" onClick={handleLogOut}>Logout</button>
       <button type="signup" onClick={handleSignUp}>Sign Up</button>
-      <h1>Device enhanced finder</h1>
+      <h1>Enhanced device finder</h1>
       <TypeFilter onSelect={(tip_filtrat) => setTipCautat(tip_filtrat)} />
       <SDCardFilter OnSDCardFilter={(SDCardFilterConst) => setSDCardFilterSelect(SDCardFilterConst)} />
       <NFC_Filter OnNFC_Filter={(NFC_FilterSelectConst) => setNFC_FilterSelect(NFC_FilterSelectConst)} />
